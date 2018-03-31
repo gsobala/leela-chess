@@ -197,9 +197,10 @@ void UCTSearch::dump_analysis(int64_t elapsed, bool force_output) {
     float feval = m_root->get_eval(color);
     float winrate = 100.0f * feval;
     // UCI-like output wants a depth and a cp.
-    // convert winrate to a cp estimate ... assume winrate = 1 / (1 + exp(-cp / 91))
-    // (91 can be tuned to have an output more or less matching e.g. SF, once both have similar strength)
-    int   cp = -91 * log(1 / feval - 1);
+    // convert winrate to a cp estimate 
+    // tan function suggested by jhellis3
+    // yields feval 1=120cp, .999=8755cp, .99=2527cp, .975=1154cp, .95=602cp, .9=301cp, .8=136cp, .7=72cp, .6=32cp, .5=0cp
+    int   cp = 100 * tan(3.125 * (feval - 0.5));
     // same for nodes to depth, assume nodes = 1.8 ^ depth.
     int   depth = log(float(m_nodes)) / log(1.8);
     // To report nodes, use visits.
